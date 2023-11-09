@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+// Importa React, useState y useEffect para manejar el estado y los efectos secundarios en el ciclo de vida del componente
+import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Button,
-  TextField,
-  Typography,
-  Container,
-  Paper,
-} from "@mui/material";
+// Importa componentes de Material-UI para la interfaz de usuario
+import { Button, TextField, Typography, Container, Paper } from "@mui/material";
 
+// Componente funcional para la gestión de la información del paciente
 export const Patient = () => {
+  // Estado local para almacenar los datos del paciente, mensajes de error y mensajes de éxito
   const [userData, setUserData] = useState({
     lugar_de_nacimiento: "",
     sexo: "",
@@ -21,10 +19,9 @@ export const Patient = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // Cargar datos del paciente al montar el componente
+  // Efecto de useEffect que se ejecuta al montar el componente para cargar los datos del paciente
   useEffect(() => {
-    // Realizar una solicitud al backend para obtener los datos del paciente
-    // Utiliza el token almacenado en el localStorage o en otro lugar seguro
+    // Realiza una solicitud al backend para obtener los datos del paciente utilizando el token de autenticación
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -35,20 +32,22 @@ export const Patient = () => {
           },
         })
         .then((response) => {
-          // Actualizar el estado con los datos del paciente
+          // Actualiza el estado local con los datos del paciente obtenidos del backend
           setUserData(response.data);
         })
         .catch((error) => {
+          // Maneja los errores al obtener datos del paciente y muestra un mensaje en la consola
           console.error("Error al obtener datos del paciente:", error);
         });
     }
   }, []);
 
+  // Función para manejar la actualización de los datos del paciente
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
-      // Realizar una solicitud al backend para actualizar los datos del paciente
+      // Realiza una solicitud al backend para actualizar los datos del paciente utilizando el token de autenticación
       const token = localStorage.getItem("token");
 
       if (token) {
@@ -62,27 +61,36 @@ export const Patient = () => {
           }
         );
 
-        // Manejar la respuesta del backend
+        // Maneja la respuesta del backend y muestra un mensaje de éxito
         setSuccessMessage(response.data.message);
       }
     } catch (error) {
-      // Manejar errores al actualizar los datos
+      // Maneja los errores al actualizar los datos y muestra un mensaje de error
       setError("Error al actualizar el expediente médico");
       console.error("Error al actualizar el expediente médico:", error);
     }
   };
 
+  // Función para manejar cambios en los campos del formulario y actualizar el estado local
   const handleChange = (e) => {
-    // Actualizar el estado cuando cambian los campos del formulario
     setUserData({
       ...userData,
       [e.target.name]: e.target.value,
     });
   };
 
+  // Renderiza el formulario de actualización de datos del paciente dentro de un contenedor Paper en un contenedor principal
   return (
     <Container component="main" maxWidth="xs">
-      <Paper elevation={3} style={{ padding: 20, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Paper
+        elevation={3}
+        style={{
+          padding: 20,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           Actualizar Expediente Médico
         </Typography>
@@ -171,12 +179,25 @@ export const Patient = () => {
             value={userData.alergias}
             onChange={handleChange}
           />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
             Actualizar Datos
           </Button>
         </form>
-        {error && <Typography variant="body2" color="error" style={{ marginTop: 10 }}>{error}</Typography>}
-        {successMessage && <Typography variant="body2" color="success" style={{ marginTop: 10 }}>{successMessage}</Typography>}
+        {error && (
+          <Typography variant="body2" color="error" style={{ marginTop: 10 }}>
+            {error}
+          </Typography>
+        )}
+        {successMessage && (
+          <Typography variant="body2" color="success" style={{ marginTop: 10 }}>
+            {successMessage}
+          </Typography>
+        )}
       </Paper>
     </Container>
   );

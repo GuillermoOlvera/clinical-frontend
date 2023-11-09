@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// Importa useState, useEffect y componentes de Material-UI para manejar el estado y la interfaz de usuario
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Button,
@@ -10,52 +11,73 @@ import {
   ListItemText,
 } from "@mui/material";
 
+// Componente funcional para mostrar y actualizar los datos del paciente
 export const PatientData = () => {
+  // Estado local para almacenar los datos del paciente y mensajes de error
   const [patientData, setPatientData] = useState({});
   const [error, setError] = useState(null);
 
+  // Efecto de useEffect que se ejecuta al montar el componente para cargar los datos del paciente
   useEffect(() => {
     const token = localStorage.getItem("token");
 
+    // Obtiene el token de autenticación almacenado en localStorage
     if (token) {
       const getPatientData = async () => {
         try {
-          const response = await axios.get("http://localhost:3000/getPatientData", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          // Realiza una solicitud al backend para obtener los datos del paciente usando el token
+          const response = await axios.get(
+            "http://localhost:3000/getPatientData",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          // Actualiza el estado local con los datos del paciente obtenidos del backend
           setPatientData(response.data);
         } catch (error) {
           setError("Error al obtener datos del paciente");
           console.error("Error al obtener datos del paciente:", error);
         }
       };
-
+      // Llama a la función para obtener los datos del paciente
       getPatientData();
     } else {
+      // Muestra un mensaje de error si no hay token, es decir, el usuario no ha iniciado sesión
       setError("Debes iniciar sesión para ver los datos del paciente");
     }
   }, []);
 
+  // Función para manejar la actualización de los datos del paciente
   const handleUpdatePatientData = async () => {
     const token = localStorage.getItem("token");
 
     if (token) {
       try {
-        const response = await axios.get("http://localhost:3000/getPatientData", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Realiza una solicitud al backend para obtener datos actualizados del paciente utilizando el token
+        const response = await axios.get(
+          "http://localhost:3000/getPatientData",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        // Actualiza el estado local con los datos actualizados del paciente obtenidos del backend
         setPatientData(response.data);
       } catch (error) {
+        // Maneja los errores al obtener datos actualizados del paciente y muestra un mensaje en la consola
         setError("Error al obtener datos actualizados del paciente");
-        console.error("Error al obtener datos actualizados del paciente:", error);
+        console.error(
+          "Error al obtener datos actualizados del paciente:",
+          error
+        );
       }
     }
   };
 
+  // Función para obtener un mensaje correspondiente al índice de masa corporal (IMC) del paciente
   const getImcMessage = () => {
     const imc = parseFloat(patientData.imc);
 
@@ -72,11 +94,26 @@ export const PatientData = () => {
     }
   };
 
+  // Renderiza la interfaz de usuario con los datos del paciente y botón para actualizar
   return (
     <Container component="main" maxWidth="xs">
-      <Paper elevation={3} style={{ padding: 20, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Paper
+        elevation={3}
+        style={{
+          padding: 20,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         {error ? (
-          <Typography variant="body2" color="error" style={{ marginBottom: 20 }}>{error}</Typography>
+          <Typography
+            variant="body2"
+            color="error"
+            style={{ marginBottom: 20 }}
+          >
+            {error}
+          </Typography>
         ) : (
           <>
             <Typography variant="h4" gutterBottom>
@@ -84,7 +121,9 @@ export const PatientData = () => {
             </Typography>
             <List>
               <ListItem>
-                <ListItemText primary={`Lugar de Nacimiento: ${patientData.lugar_de_nacimiento}`} />
+                <ListItemText
+                  primary={`Lugar de Nacimiento: ${patientData.lugar_de_nacimiento}`}
+                />
               </ListItem>
               <ListItem>
                 <ListItemText primary={`Sexo: ${patientData.sexo}`} />
@@ -93,7 +132,9 @@ export const PatientData = () => {
                 <ListItemText primary={`Edad: ${patientData.edad}`} />
               </ListItem>
               <ListItem>
-                <ListItemText primary={`Tipo de Sangre: ${patientData.tipo_de_sangre}`} />
+                <ListItemText
+                  primary={`Tipo de Sangre: ${patientData.tipo_de_sangre}`}
+                />
               </ListItem>
               <ListItem>
                 <ListItemText primary={`Peso: ${patientData.peso}`} />
@@ -111,7 +152,11 @@ export const PatientData = () => {
                 <ListItemText primary={`Mensaje IMC: ${getImcMessage()}`} />
               </ListItem>
             </List>
-            <Button onClick={handleUpdatePatientData} variant="contained" style={{ marginTop: 20 }}>
+            <Button
+              onClick={handleUpdatePatientData}
+              variant="contained"
+              style={{ marginTop: 20 }}
+            >
               Actualizar Datos del Paciente
             </Button>
           </>
